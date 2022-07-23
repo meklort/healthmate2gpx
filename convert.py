@@ -48,9 +48,8 @@ class Activity:
 
         location_time = datetime.strptime(
             time, self.WHITHINGS_TIME_FORMAT).astimezone(self.timezone)
-        if self.start <= location_time <= self.stop:
-            self.has_points = True
 
+        if self.start <= location_time <= self.stop:
             lats = eval(lats, {})
             lons = eval(lons, {})
             alts = eval(alts, {})
@@ -59,13 +58,18 @@ class Activity:
                 lon = lons[idx]
                 alt = alts[idx]
                 speed = speeds[idx]
-                print(f"Adding {lat}, {lon} to activity at {self.start}")
-                self.gpx_segment.points.append(
-                    gpxpy.gpx.GPXTrackPoint(lat,
-                                            lon,
-                                            elevation=alt,
-                                            speed=speed,
-                                            time=location_time))
+                if -90 <= lat <= 90 and -180 <= lon <= 180:
+                    self.has_points = True
+                    print(f"Adding {lat}, {lon} to activity at {self.start}")
+                    self.gpx_segment.points.append(
+                        gpxpy.gpx.GPXTrackPoint(lat,
+                                                lon,
+                                                elevation=alt,
+                                                speed=speed,
+                                                time=location_time))
+                else:
+                    print(f"Unexpected {lat}, {lon}")
+
             return True
         return False
 
